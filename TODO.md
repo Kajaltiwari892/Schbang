@@ -1,0 +1,5 @@
+- [x] Update Togglemode.tsx to handle theme state and loading properly
+  - [x] Add mounted state to prevent hydration mismatch
+  - [x] Read theme and resolvedTheme from useTheme
+  - [x] Update button icon based on resolvedTheme
+  - [x] Add checkmarks to dropdown items for current theme

@@ -131,9 +131,12 @@ export const loadMeetingsClient = (): Meeting[] => {
   try {
     const savedMeetings = localStorage.getItem('meetings');
     if (savedMeetings) {
-      return JSON.parse(savedMeetings);
+      const parsed = JSON.parse(savedMeetings);
+      console.log('📅 Loaded meetings from localStorage:', parsed.length, 'meetings');
+      return parsed;
     }
     // If no saved meetings, initialize with default data
+    console.log('📅 Initializing meetings with default data');
     localStorage.setItem('meetings', JSON.stringify(initialMeetings));
     return initialMeetings;
   } catch (error) {
@@ -160,7 +163,17 @@ export const updateMeetingSyncStatus = (meetingId: number, isSynced: boolean) =>
     const updatedMeetings = [...currentMeetings];
     updatedMeetings[meetingIndex] = { ...updatedMeetings[meetingIndex], isSynced };
     updateMeetings(updatedMeetings);
+    console.log('✅ Meeting synced:', meetingId, 'isSynced:', isSynced);
     return updatedMeetings;
   }
   return currentMeetings;
+};
+
+// Helper function to clear all data (for debugging)
+export const clearMeetingsData = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('meetings');
+    localStorage.removeItem('meetings_migrated_v2');
+    console.log('🗑️ Cleared all meetings data');
+  }
 };

@@ -9,7 +9,7 @@ export interface Meeting {
 }
 
 // Initial meetings data
-const initialMeetings: Meeting[] = [
+export const meetings: Meeting[] = [
   // September 2025
   {
     id: 1,
@@ -137,11 +137,11 @@ export const loadMeetingsClient = (): Meeting[] => {
     }
     // If no saved meetings, initialize with default data
     console.log('📅 Initializing meetings with default data');
-    localStorage.setItem('meetings', JSON.stringify(initialMeetings));
-    return initialMeetings;
+    localStorage.setItem('meetings', JSON.stringify(meetings));
+    return meetings;
   } catch (error) {
     console.error('Error loading meetings from localStorage:', error);
-    return initialMeetings;
+    return meetings;
   }
 };
 

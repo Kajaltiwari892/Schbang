@@ -17,7 +17,6 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function Calendar() {
-  // Create stable today reference at midnight (local time)
   const today = useMemo(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -29,13 +28,13 @@ export default function Calendar() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [isClient, setIsClient] = useState(false);
 
-  // Load meetings only on client side to avoid hydration mismatch
+  // Load meetings
   useEffect(() => {
     setIsClient(true);
     setMeetings(loadMeetingsClient());
   }, []);
 
-  const days = getMonthDays(currentYear, currentMonth); // returns Date[]
+  const days = getMonthDays(currentYear, currentMonth);
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -51,7 +50,6 @@ export default function Calendar() {
     } else setCurrentMonth((m) => m + 1);
   };
 
-  // Return meetings that fall on `day` (safe local compare)
   const meetingsForDay = (day: Date) =>
     meetings.filter((m) => {
       if (!m?.date) return false;
@@ -72,7 +70,12 @@ export default function Calendar() {
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{
+          duration: 1,
+          ease: [0.25, 0.46, 0.45, 0.94],
+          opacity: { duration: 0.8 },
+          scale: { duration: 1, ease: [0.25, 0.46, 0.45, 0.94] },
+        }}
         className="max-w-4xl mx-auto bg-white/90 dark:bg-[#0C0A09]/90 backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-2xl border-4 border-[#AAA995]/30 dark:border-[#AAA995]/20 overflow-hidden"
       >
         {/* Calendar Top Binding */}
@@ -86,9 +89,13 @@ export default function Calendar() {
         <div className="p-4 md:p-6">
           {/* Month navigation */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: 0.3,
+              duration: 0.8,
+              ease: [0.25, 0.46, 0.45, 0.94],
+            }}
             className="mb-4"
           >
             {/* Month/Year Title */}
@@ -122,7 +129,11 @@ export default function Calendar() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
+            transition={{
+              delay: 0.5,
+              duration: 0.8,
+              ease: [0.25, 0.46, 0.45, 0.94],
+            }}
             className="grid grid-cols-7 gap-1 md:gap-2"
           >
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d, i) => (
@@ -130,7 +141,11 @@ export default function Calendar() {
                 key={d}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + i * 0.05, duration: 0.3 }}
+                transition={{
+                  delay: 0.6 + i * 0.05,
+                  duration: 0.7,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
                 className="font-bold text-center text-[#AAA995] dark:text-[#AAA995]/80 text-xs md:text-sm py-1"
               >
                 {d}
@@ -139,7 +154,7 @@ export default function Calendar() {
 
             {/* Days */}
             {days.map((day, index) => {
-              const dateStr = formatDateLocal(day); // 'YYYY-MM-DD' local
+              const dateStr = formatDateLocal(day);
               const isToday = isSameDay(today, day);
               const isCurrentMonth = day.getMonth() === currentMonth;
               const dayMeetings = meetingsForDay(day);
@@ -148,11 +163,25 @@ export default function Calendar() {
               return (
                 <motion.div
                   key={dateStr}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6 + index * 0.01, duration: 0.2 }}
+                  initial={{ opacity: 0, scale: 0.8, y: 5 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{
+                    delay: 0.9 + index * 0.015,
+                    duration: 0.6,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                    scale: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    y: -3,
+                    transition: {
+                      duration: 0.3,
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                    },
+                  }}
+                  whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
                   onClick={() => setSelectedDate(dateStr)}
-                  className={`p-1.5 md:p-2 text-center cursor-pointer rounded-lg flex flex-col items-center justify-center min-h-[60px] md:min-h-[75px] gap-0.5 md:gap-1 transition-all hover:scale-105 hover:shadow-lg
+                  className={`p-1.5 md:p-2 text-center cursor-pointer rounded-lg flex flex-col items-center justify-center min-h-[60px] md:min-h-[75px] gap-0.5 md:gap-1 transition-all hover:shadow-lg
                 ${!isCurrentMonth ? "opacity-40" : ""}
                 ${
                   isToday
@@ -191,7 +220,7 @@ export default function Calendar() {
           date={selectedDate}
           onClose={() => {
             setSelectedDate(null);
-            // Reload meetings to reflect any sync status changes
+
             setMeetings(loadMeetingsClient());
           }}
         />

@@ -15,9 +15,10 @@ import {
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { parseDateToLocal, isSameDay, formatDateLocal } from "@/utils/dateUtil";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface MeetingModalProps {
-  date: string; // expecting 'YYYY-MM-DD' or other string — parseDateToLocal handles it
+  date: string;
   onClose: () => void;
 }
 
@@ -43,8 +44,6 @@ export default function MeetingModal({ date, onClose }: MeetingModalProps) {
       // Simulate API call (or call real API)
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // updateMeetingSyncStatus should update storage/local mock and return updated array
-      // (This is from your mockData utilities)
       const updated = updateMeetingSyncStatus(id, true);
 
       // Re-filter for the same selected date (safe compare)
@@ -72,13 +71,35 @@ export default function MeetingModal({ date, onClose }: MeetingModalProps) {
 
         <div className="space-y-4 mt-2">
           {meetings.length === 0 ? (
-            <p>No meetings scheduled for this date.</p>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 0.6,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+            >
+              No meetings scheduled for this date.
+            </motion.p>
           ) : (
-            meetings.map((meeting) => (
-              <div
-                key={meeting.id}
-                className="p-3 border rounded flex justify-between items-center"
-              >
+            <AnimatePresence mode="popLayout">
+              {meetings.map((meeting, index) => (
+                <motion.div
+                  key={meeting.id}
+                  initial={{ opacity: 0, x: -15, scale: 0.96 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: 15, scale: 0.96 }}
+                  transition={{ 
+                    delay: index * 0.08,
+                    duration: 0.5,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                  }}
+                  whileHover={{ 
+                    scale: 1.02,
+                    transition: { duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }
+                  }}
+                  className="p-3 border rounded flex justify-between items-center"
+                >
                 <div>
                   <h3 className="font-bold">{meeting.title}</h3>
                   <p className="text-sm">By: {meeting.initiator}</p>
@@ -100,8 +121,9 @@ export default function MeetingModal({ date, onClose }: MeetingModalProps) {
                     </Button>
                   )}
                 </div>
-              </div>
-            ))
+                </motion.div>
+              ))}
+            </AnimatePresence>
           )}
         </div>
       </DialogContent>

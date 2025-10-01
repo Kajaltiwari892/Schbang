@@ -5,9 +5,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { meetings as mockMeetings, Meeting } from "@/data/mockData";
+import { meetings as mockMeetings } from "@/data/mockData";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 

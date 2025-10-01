@@ -1,12 +1,33 @@
+export type MeetingCategory = "client" | "internal";
+
 export interface Meeting {
   id: number;
-  date: string; 
+  date: string;
   title: string;
   initiator: string;
   attendees: string[];
   time: string;
   isSynced: boolean;
+  category?: MeetingCategory; // Optional for backward compatibility
 }
+
+// Category color mappings
+export const categoryColors = {
+  client: {
+    bg: "bg-blue-500/20 dark:bg-blue-500/30",
+    border: "border-blue-500/40",
+    text: "text-blue-700 dark:text-blue-300",
+    badge: "bg-blue-500",
+    ring: "ring-blue-500/50",
+  },
+  internal: {
+    bg: "bg-green-500/20 dark:bg-green-500/30",
+    border: "border-green-500/40",
+    text: "text-green-700 dark:text-green-300",
+    badge: "bg-green-500",
+    ring: "ring-green-500/50",
+  },
+};
 
 // Initial meetings data
 export const meetings: Meeting[] = [
@@ -19,6 +40,7 @@ export const meetings: Meeting[] = [
     attendees: ["Rahul", "Rohit"],
     time: "10:00 AM - 11:00 AM",
     isSynced: false,
+    category: "internal" as MeetingCategory,
   },
   {
     id: 2,
@@ -28,8 +50,9 @@ export const meetings: Meeting[] = [
     attendees: ["Sam"],
     time: "2:00 PM - 3:00 PM",
     isSynced: false,
+    category: "client" as MeetingCategory,
   },
-  
+
   // October 2025
   {
     id: 10,
@@ -38,7 +61,8 @@ export const meetings: Meeting[] = [
     initiator: "Shubham",
     attendees: ["Team"],
     time: "10:00 AM - 10:30 AM",
-    isSynced: false
+    isSynced: false,
+    category: "internal" as MeetingCategory,
   },
   {
     id: 11,
@@ -47,7 +71,8 @@ export const meetings: Meeting[] = [
     initiator: "Shubham",
     attendees: ["Team"],
     time: "11:00 AM - 12:30 PM",
-    isSynced: false
+    isSynced: false,
+    category: "internal" as MeetingCategory,
   },
   {
     id: 12,
@@ -56,7 +81,8 @@ export const meetings: Meeting[] = [
     initiator: "Kanchan",
     attendees: ["Design Team", "Frontend Team"],
     time: "2:00 PM - 3:30 PM",
-    isSynced: false
+    isSynced: false,
+    category: "internal" as MeetingCategory,
   },
   {
     id: 13,
@@ -65,7 +91,8 @@ export const meetings: Meeting[] = [
     initiator: "Akshita",
     attendees: ["Client Team", "Product Owners"],
     time: "10:00 AM - 11:30 AM",
-    isSynced: false
+    isSynced: false,
+    category: "client" as MeetingCategory,
   },
   {
     id: 14,
@@ -74,7 +101,8 @@ export const meetings: Meeting[] = [
     initiator: "Gautami",
     attendees: ["Entire Team"],
     time: "4:00 PM - 5:30 PM",
-    isSynced: false
+    isSynced: false,
+    category: "internal" as MeetingCategory,
   },
   // November 2025 meetings
   {
@@ -84,7 +112,8 @@ export const meetings: Meeting[] = [
     initiator: "Shubham",
     attendees: ["Rahul", "Akshita"],
     time: "2:00 PM - 3:00 PM",
-    isSynced: false
+    isSynced: false,
+    category: "client" as MeetingCategory,
   },
   {
     id: 27,
@@ -93,7 +122,8 @@ export const meetings: Meeting[] = [
     initiator: "Shubham",
     attendees: ["Management", "Team Leads"],
     time: "10:00 AM - 12:00 PM",
-    isSynced: false
+    isSynced: false,
+    category: "internal" as MeetingCategory,
   },
   {
     id: 28,
@@ -102,7 +132,8 @@ export const meetings: Meeting[] = [
     initiator: "Rahul",
     attendees: ["Development Team"],
     time: "1:00 PM - 3:00 PM",
-    isSynced: false
+    isSynced: false,
+    category: "internal" as MeetingCategory,
   },
   {
     id: 29,
@@ -111,7 +142,8 @@ export const meetings: Meeting[] = [
     initiator: "Akshita",
     attendees: ["Product Team", "Stakeholders"],
     time: "11:00 AM - 1:00 PM",
-    isSynced: false
+    isSynced: false,
+    category: "internal" as MeetingCategory,
   },
   {
     id: 30,
@@ -120,50 +152,61 @@ export const meetings: Meeting[] = [
     initiator: "Kanchan",
     attendees: ["All Employees"],
     time: "3:00 PM - 6:00 PM",
-    isSynced: false
-  }
+    isSynced: false,
+    category: "internal" as MeetingCategory,
+  },
 ];
 
 // Load synced meetings from localStorage or initialize (client-side only)
 export const loadMeetingsClient = (): Meeting[] => {
-  if (typeof window === 'undefined') return [];
-  
+  if (typeof window === "undefined") return [];
+
   try {
-    const savedMeetings = localStorage.getItem('meetings');
+    const savedMeetings = localStorage.getItem("meetings");
     if (savedMeetings) {
       const parsed = JSON.parse(savedMeetings);
-      console.log('📅 Loaded meetings from localStorage:', parsed.length, 'meetings');
+      console.log(
+        "📅 Loaded meetings from localStorage:",
+        parsed.length,
+        "meetings"
+      );
       return parsed;
     }
     // If no saved meetings, initialize with default data
-    console.log('📅 Initializing meetings with default data');
-    localStorage.setItem('meetings', JSON.stringify(meetings));
+    console.log("📅 Initializing meetings with default data");
+    localStorage.setItem("meetings", JSON.stringify(meetings));
     return meetings;
   } catch (error) {
-    console.error('Error loading meetings from localStorage:', error);
+    console.error("Error loading meetings from localStorage:", error);
     return meetings;
   }
 };
 
 // Function to update meetings in localStorage
 const updateMeetings = (updatedMeetings: Meeting[]) => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     try {
-      localStorage.setItem('meetings', JSON.stringify(updatedMeetings));
+      localStorage.setItem("meetings", JSON.stringify(updatedMeetings));
     } catch (error) {
-      console.error('Error saving meetings to localStorage:', error);
+      console.error("Error saving meetings to localStorage:", error);
     }
   }
 };
 
-export const updateMeetingSyncStatus = (meetingId: number, isSynced: boolean) => {
+export const updateMeetingSyncStatus = (
+  meetingId: number,
+  isSynced: boolean
+) => {
   const currentMeetings = loadMeetingsClient();
-  const meetingIndex = currentMeetings.findIndex(m => m.id === meetingId);
+  const meetingIndex = currentMeetings.findIndex((m) => m.id === meetingId);
   if (meetingIndex !== -1) {
     const updatedMeetings = [...currentMeetings];
-    updatedMeetings[meetingIndex] = { ...updatedMeetings[meetingIndex], isSynced };
+    updatedMeetings[meetingIndex] = {
+      ...updatedMeetings[meetingIndex],
+      isSynced,
+    };
     updateMeetings(updatedMeetings);
-    console.log('✅ Meeting synced:', meetingId, 'isSynced:', isSynced);
+    console.log("✅ Meeting synced:", meetingId, "isSynced:", isSynced);
     return updatedMeetings;
   }
   return currentMeetings;
@@ -171,9 +214,9 @@ export const updateMeetingSyncStatus = (meetingId: number, isSynced: boolean) =>
 
 // Helper function to clear all data (for debugging)
 export const clearMeetingsData = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('meetings');
-    localStorage.removeItem('meetings_migrated_v2');
-    console.log('🗑️ Cleared all meetings data');
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("meetings");
+    localStorage.removeItem("meetings_migrated_v2");
+    console.log("🗑️ Cleared all meetings data");
   }
 };
